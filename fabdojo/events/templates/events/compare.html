@@ -1,0 +1,325 @@
+{% extends "events/base.html" %}
+
+{% load index %}
+
+{% block extrastyles %}
+{% load static %}
+<style>
+	.row {
+		border-style: solid;
+		border-width: 1px;
+	}
+
+	.row > th {
+		border-style: solid;
+		border-width: 1px;
+		width:5px;
+	}
+
+	table {
+		table-layout: auto;
+		margin:auto;
+		font-size:13px;
+	}
+
+	.scroll {
+		overflow:auto;
+	}
+
+	.label {
+		text-align:left;
+		white-space: nowrap;
+	}
+
+	.center-table {
+		margin: auto;
+		width: 100%;
+	}
+
+	.split {
+		flex:1;
+		padding:1px 1px;
+	}
+
+	.rotate {
+		padding-top:10px;
+		width: 64px;
+		height 45px;
+		transform: rotate(315deg);
+		text-align: left;
+	}
+	.player_button {
+		border: none;
+		color: black;
+		text-align: center;
+		text-decoration: none;
+		display: inline-block;
+		font-size: 16px;
+		margin: 5px 2px;
+		padding-top:15px;
+		cursor: pointer;
+	}	
+
+	.card_button {
+		margin:auto;
+		cursor: pointer;
+	}
+
+	.float-right {
+		float:right;
+		margin-right:3px;
+	}
+
+</style>
+
+{% endblock %}
+
+{% block body %}
+
+<div class="center-table scroll">
+<h1 class="center_header">{{hero_name}}</h1>
+	<h2 class="center_header"><a href="{% url 'events:event_list' format.code %}">{{format}}</a></h2>
+	<table>
+		<tr>
+			{% for deck in decks %}
+			<th>
+				{% if deck != "-" %}
+					<div class="rotate"><a class="names"href="{% url 'events:decklist' deck.deck_id %}">{{deck.player_id}}</a></div>
+
+				{% endif %}
+			</th>
+			{% endfor %}
+		</tr>
+		<tr>
+			{% for deck in decks %}
+			<th>
+				{% if deck != "-" %}
+					{{deck.get_placings}}
+				{% endif %}
+			</th>
+			{% endfor %}
+		</tr>
+		<tr>
+			{% for deck in decks %}
+			<th>
+				{% if deck != "-" %}					
+				<a href="{% url 'events:compare' hero_name format.code %}?less_deck=
+					{% if prev_deck_ids %}
+						{% for id in prev_deck_ids %}
+							{{id}},
+						{% endfor %}
+					{% endif %}
+					{{deck.deck_id}}
+					{% if prev_less_card_ids %}
+						&less_card=
+						{% for id in prev_less_card_ids %}
+							{{id}}
+							{% if not forloop.last %}
+							,
+							{% endif %}
+						{% endfor %}
+					{% endif %}
+					{% if prev_just_card_ids %}
+						&just_card=
+						{% for id in prev_just_card_ids %}
+							{{id}}
+							{% if not forloop.last %}
+							,
+							{% endif %}
+						{% endfor %}
+					{% endif %}
+					" class="player_button"><img src="{% static 'events/images/x.jpg' %}"></a>
+				{% endif %}
+			</th>
+			{% endfor %}
+		</tr>
+		<tr>
+			{% for deck in decks %}
+			<th>
+				{% if deck != "-" %}
+					{{deck.event.get_date}}
+				{% endif %}
+			</th>
+			{% endfor %}
+		</tr>
+		<tr>
+			{% for deck in decks %}
+				{% if forloop.first %}
+					<th>
+						<div class="label">Placing</div>
+					</th>	
+				{% else %}
+					<th>
+						{% if deck != "-" %}
+							{{deck.get_placings}}
+						{% endif %}
+					</th>
+				{% endif %}
+			{% endfor %}
+		</tr>
+		<tr>
+			<th>
+				<div class="label">Equipment</div>
+			</th>
+			<th>
+			</th>
+			<th>
+			</th>
+			{% for item in pitch_count %}
+			<th>
+				{{item.0}}
+			</th>
+			{% endfor %}
+		</tr>
+		<tr>
+			<th>
+				<div class="label">No pitch</div>
+			</th>
+			<th>
+			</th>
+			<th>
+			</th>
+			{% for item in pitch_count %}
+			<th>
+				{{item.1}}
+			</th>
+			{% endfor %}
+		</tr>
+		<tr>
+			<th>
+				<div class="label">Red</div>
+			</th>
+			<th>
+			</th>
+			<th>
+			</th>
+			{% for item in pitch_count %}
+			<th>
+				{{item.2}}
+			</th>
+			{% endfor %}
+		</tr>
+		<tr>
+			<th>
+				<div class="label">Yellow</div>
+			</th>
+			<th>
+			</th>
+			<th>
+			</th>
+			{% for item in pitch_count %}
+			<th>
+				{{item.3}}
+			</th>
+			{% endfor %}
+		</tr>
+		<tr>
+			<th>
+				<div class="label">Blue</div>
+			</th>
+			<th>
+			</th>
+			<th>
+			</th>
+			{% for item in pitch_count %}
+			<th>
+				{{item.4}}
+			</th>
+			{% endfor %}
+		</tr>
+		{% for list in card_list %}
+		<tr class="row">
+			{% for item in list %}
+				{% if forloop.first %}
+					<th>
+						<div class="label">{{item.name}}</div>
+					</th>
+				{% elif forloop.counter0 == 1 %}
+					<th>
+						<div class="container">
+							<div class="split"><a href="{% url 'events:compare' hero_name format.code %}
+							{% if prev_deck_ids %}
+								?less_deck=
+								{% for id in prev_deck_ids %}
+									{{id}}
+									{% if not forloop.last %}
+									,
+									{% endif %}
+								{% endfor %}
+							&{% endif %}
+							{% if prev_less_card_ids %}
+								{% if not prev_deck_ids %}?{% endif %}
+								less_card=
+								{% for id in prev_less_card_ids %}
+									{{id}}
+									{% if not forloop.last %}
+									,
+									{% endif %}
+								{% endfor %}
+							&{% endif %}
+							{% if not prev_less_card_ids and not prev_deck_ids %}?{% endif %}
+							just_card=
+							{% if prev_just_card_ids %}
+								{% for id in prev_just_card_ids %}
+									{{id}},
+								{% endfor %}
+							{% endif %}
+							{{list.0.card_id}}
+							" class="card_button"><img src="{% static 'events/images/check.jpg' %}"></a></div>
+							<div class="split"><a href="{% url 'events:compare' hero_name format.code %}
+							{% if prev_deck_ids %}
+								?less_deck=
+								{% for id in prev_deck_ids %}
+									{{id}}
+									{% if not forloop.last %}
+									,
+									{% endif %}
+								{% endfor %}
+							&{% else %}?{% endif %}
+								less_card=
+							{% if prev_less_card_ids %}
+								{% for id in prev_less_card_ids %}
+									{{id}},
+								{% endfor %}
+							{% endif %}
+							{{list.0.card_id}}
+							{% if prev_just_card_ids %}
+							&just_card=
+								{% for id in prev_just_card_ids %}
+									{{id}}
+									{% if not forloop.last %}
+									,
+									{% endif %}
+								{% endfor %}
+							{% endif %}
+							" class="card_button"><img src="{% static 'events/images/x.jpg' %}"></a></div>
+						</div>
+					</th>
+					<th style="background-color: 
+						{% if list.0.pitch == 1 %} LightPink 
+						{% elif list.0.pitch == 2 %} PaleGoldenRod 
+						{% elif list.0.pitch == 3 %} LightBlue
+						{% else %}
+							{% if list.0.type == "Weapon" or list.0.type == "Equipment" %} DarkGray 
+							{% else %} SandyBrown {% endif %}
+						{% endif %};">
+						<div>{{item}}</div>
+					</th>
+				{% else %} 
+					<th style="background-color: 
+						{% if list.0.pitch == 1 %} LightPink 
+						{% elif list.0.pitch == 2 %} PaleGoldenRod 
+						{% elif list.0.pitch == 3 %} LightBlue
+						{% else %}
+							{% if list.0.type == "Weapon" or list.0.type == "Equipment" %} DarkGray 
+							{% else %} SandyBrown {% endif %}
+						{% endif %};">
+						<div>{{item}}</div>
+					</th>
+				{% endif %}
+			{% endfor %}
+		</tr>
+		{% endfor %}
+	</table>
+</div>
+{% endblock %}

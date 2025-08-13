@@ -1,0 +1,172 @@
+{% extends "events/base.html" %}
+
+{% block extrastyles %}
+
+	{% load static %}
+
+    <style>
+        .equipment {
+            border:1px solid black;
+            background-color:DarkGray;
+            margin-bottom:10px;
+        }
+
+        .no_pitch {
+            border:1px solid black;
+            background-color:SandyBrown;
+            margin-bottom:10px;
+        }
+
+        .red {
+            border:1px solid black;
+            background-color:LightPink;
+        }
+
+        .yellow {
+            border:1px solid black;
+            background-color:PaleGoldenRod;
+            margin-bottom:10px;
+
+        }
+
+        .blue{
+            border:1px solid black;
+            background-color:LightBlue;
+        }
+
+        .card {
+            width: 100%;
+            border: 0px;
+            margin-left:auto;
+            margin-right:auto;
+        }
+
+        .split {
+	        flex:1 1 0;
+            width:33%;
+	        padding:10px;
+        }
+
+        .border {
+            border:1px solid black;
+        }
+
+        .hover {
+            cursor: pointer;
+        }
+
+        @media (max-device-width:768px){
+            .split {
+	            flex:1 1 0;
+                width:auto;
+	            padding:10px;
+            }
+
+            .container {
+		        display: block;
+		        flex-flow:column wrap;
+	        }
+
+            .card {
+                width: 50%;
+                border: 0px;
+                margin-left:auto;
+                margin-right:auto;
+            }
+        }
+    </style>
+
+
+    <script type="text/javascript">
+        function showIt(imgsrc)
+        {
+        try {
+            document.getElementById('imageshow').src="{% static 'card/images/'%}"+imgsrc+".width-450.png";
+        } catch(error) {
+            document.getElementById('imageshow').src="{% static 'card/images/cardback.width-450.png'%}";
+        }
+        document.getElementById('imageshow').style.display='inline';
+        }
+    </script>
+{% endblock %}
+
+{% block body %}
+
+<div class="center border">
+    <div class="center_header">
+    <h1><a class="names" href="{% url 'events:player' decklist.player_id.gem_id %}">{{decklist.player_id.name}}</a></h1>
+    <h2><a class="names" href="{% url 'events:hero' decklist.hero %}">{{decklist.get_hero_name}}</a></h2>
+    <h2><a class="names" href="{% url 'events:event' decklist.event.id %}">{{decklist.event}}</a></h2>
+    <h2><a class="names" href="{% url 'events:event_list' decklist.event.format.code %}">{{decklist.event.format}}</a></h2>
+    <h2>{{decklist.event.get_date}}</h2><br>
+    </div>
+    <div class="container">
+        <div class="split">
+            <div class="equipment item">
+            <h2>Equipment ({{equipment_count}})</h2>
+            <hr/>
+                {% for item in equipment %}
+                <div class="hover" onclick="showIt('{{item.card.card_id}}')">
+                    {{item.card_count}} {{item.card.name}}
+                </div>
+                <br/>
+                {% endfor %}
+            </div>
+            {% if no_pitch %}
+            <div class="no_pitch item">
+            <h2>No pitch ({{no_pitch_count}})</h2>
+            <hr/>
+                {% for item in no_pitch %}
+                <div class="hover" onclick="showIt('{{item.card.card_id}}')">
+                {{item.card_count}} {{item.card.name}}
+                </div>
+                <br/>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <div class="red item">
+            <h2> Red ({{red_count}})</h2>
+            <hr/>
+                {% for item in red %}
+                <div class="hover" onclick="showIt('{{item.card.card_id}}')">
+                {{item.card_count}} {{item.card.name}}
+                </div>
+                <br/>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="split">
+            <div class="yellow item">
+            <h2> Yellow ({{yellow_count}})</h2>
+            <hr/>
+                {% for item in yellow %}
+                <div class="hover" onclick="showIt('{{item.card.card_id}}')">
+                {{item.card_count}} {{item.card.name}}
+                </div>
+                <br/>
+                {% endfor %}
+            </div>
+            <div class="blue item">
+            <h2> Blue ({{blue_count}})</h2>
+            <hr/>
+                {% for item in blue %}
+                <div class="hover" onclick="showIt('{{item.card.card_id}}')">
+                {{item.card_count}} {{item.card.name}}
+                </div>
+                <br/>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="split">            
+            <!--
+            commented out for when we ever need to add the hero card portrait
+            <img class="card hero" src="{% static 'card/images/'|add:hero_card|add:'.width-450.png' %}">
+            -->
+            <div style="display:flex; justify-content:center;">
+            <img class="card" src="{% static 'card/images/cardback.width-450.png' %}" id="imageshow" default="{% static 'card/images/cardback.width-450.png' %}">
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

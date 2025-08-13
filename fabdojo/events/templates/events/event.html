@@ -1,0 +1,74 @@
+{% extends "events/hero_panel.html" %}
+
+{% block extrastyles %}
+    .placing {
+        text-align:right;
+        margin-right:30px;
+    }
+
+    h2 {
+	    margin:0px;
+	    padding:0px;
+	    font-size:large;
+    }
+
+    .label {
+        text-align:left;
+        margin-right:30px;
+    }
+
+    @media only screen and (max-width:600px){
+        .label {
+            text-align:left;
+            margin-right:5px;
+            word-break: break-all;
+        }
+    }
+{% endblock %}
+
+
+{% block body %}
+<div class="center-label">
+    <h1>{{events.name}}</h1>
+    <h2>{{events.store}}</h2>
+    <h2><a href="{% url 'events:event_list' events.format.code %}">{{events.format}}</a></h2>
+    <h2>{{events.get_date}}</h2>
+    <br>
+</div>
+<div>
+    <table style="margin:auto;">
+        <tr>
+            <th>
+                <h2 class="label">Placing</h2> <hr>
+            </th>
+            <th>
+                <h2 class="label">Hero</h2> <hr>
+            </th>
+            <th>
+                <h2 class="label">Player</h2> <hr>
+            </th>
+        </tr>
+        {% for deck in decks %}
+            <tr>
+                <th><div class="placing"> {{deck.get_placings}}</div></th>
+                <th><div class="label"> {{deck.get_hero_name}}</div></th>
+                <th><div class="label"><a href="{% url 'events:player' deck.player_id.gem_id %}">{{deck.player_id}} </a></div></th>
+                <th><div class="label"><a href="{% url 'events:decklist' deck.deck_id %}"> View Decklist </a></div></th>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}
+
+{% block hero_block %}
+    <h1>Heroes</h1>
+    <table>
+    {% for hero in heroes %}
+    <tr>
+        <th>
+            <div class='label'><a href="{% url 'events:hero' hero.young_name %}">{{hero.young_name}}</a></div>
+        </th>
+    </tr>
+    {% endfor %}
+    </table>
+{% endblock %}

@@ -1,0 +1,261 @@
+{% extends "events/base.html" %}
+{% load static %}
+
+{% block extrastyles %}
+	<style>
+	.button {
+	  background-color: #2596be;
+	  border: none;
+	  color: black;
+	  padding: 15px 20px;
+	  text-align: center;
+	  text-decoration: none;
+	  display: inline-block;
+	  font-size: 16px;
+	  margin: 4px 2px;
+	  cursor: pointer;
+	}
+
+	.float-right {
+		float:right;
+		margin-right:3px;
+	}
+
+	h2 {
+		margin:0px;
+		padding:0px;
+		font-size:x-large;
+	}
+
+	.right-content{
+		flex: 1 1 50%;
+		padding-left:20px;
+		display:block;
+	}
+
+	.parent {
+        position: relative;
+		padding:5px;
+    }
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        padding: 5px;
+    }
+
+    .child {
+        position: absolute;
+        bottom: 15px;
+        width: 95%;
+        text-align:center;
+        background-color:rgba(0, 0, 0, 0.5);
+        color:white;
+    }
+    .pop-card {
+        width: 100%;
+        border: 0px;
+        margin-left:auto;
+        margin-right:auto;
+    }
+	</style>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script type="text/javascript">
+	$( document ).ready(function() {
+		var sel = document.getElementById('date');
+		sel.onchange = function () {
+			window.location.replace("{% url 'events:hero' hero_name %}?date=" + this.value);
+		}
+		
+		{% if CC_active %}
+		document.getElementById("date_cc").addEventListener("click", function() {
+			var button = document.getElementById("date_cc");
+			var href="{% url 'events:compare' hero_name 'CC' %}{% if date %}?date={{date}}{% endif %}";
+			if ($('input:checkbox').filter(':not(:checked)').length > 0){
+				{% if date %}
+					href += "&less_deck=";
+				{% else %}
+					href += "?less_deck=";
+				{% endif %}
+				$('input[type="checkbox"]:not(:checked)').each(function () {
+					if ($(this).attr('name') != "check_all"){
+						href += $(this).attr('value') + ",";
+					}
+				});
+			}
+			button.href = href
+		});
+		{% endif %}
+		
+		{% if Blitz_active %}   
+		document.getElementById("date_blitz").addEventListener("click", function() {
+			var button = document.getElementById("date_blitz");
+			var href="{% url 'events:compare' hero_name 'Blitz' %}{% if date %}?date={{date}}{% endif %}";
+			if ($('input:checkbox').filter(':not(:checked)').not('#check_all').length > 0){
+				{% if date %}
+					href += "&less_deck=";
+				{% else %}
+					href += "?less_deck=";
+				{% endif %}
+				$('input[type="checkbox"]:not(:checked)').each(function () {
+					if ($(this).attr('name') != "check_all"){
+						href += $(this).attr('value') + ",";
+					}
+				});
+				console.log(href)
+			}
+			button.href = href
+		});
+		{% endif %}
+	});
+
+	$(document).ready(function(){
+		// Check or Uncheck All checkboxes
+		$("#check_all").change(function(){
+			$('input[type="checkbox"]').each(function () {
+				$(this).prop('checked', $("#check_all").is(':checked'));
+			});
+		});
+	});
+	</script>
+{% endblock %}
+
+
+
+{% block body %}		
+<div class="center border">
+	<div class="content-sidebar">
+		<div><h1>{{hero_name}}</h1></div>
+		<div class="right-content">
+			<div class="float-right">
+				Filter decks by:
+				<select id="date">
+					<option></option>
+					<option value="all" {% if date == "all" %} selected="selected" {% endif %}>All time</option>
+					<option value="2week" {% if date == "2week" %} selected="selected" {% endif %}>Last 2 Weeks</option>
+					<option value="1month" {% if date == "1month" %} selected="selected" {% endif %}>Last Month</option>
+					<option value="3month" {% if date == "3month" %} selected="selected" {% endif %}>Last 3 Months</option>
+				</select>
+				{% if CC_active %}                
+				<a id="date_cc" class="button">Compare CC Decks</a>
+				{% endif %}
+				{% if Blitz_active %}                
+				<a id="date_blitz" class="button">Compare Blitz Decks</a>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+	</hr>
+	<br>
+	{% if decks|length == 0 %}
+	<h2 class="center-label"> Oops! This hero is watiting for you to break the format! </h2>
+	{% else %}
+		<table>
+			<tr>
+				<th>
+					<input type="checkbox" name="check_all" id="check_all" checked>
+				</th>
+				<th>
+					<div class="label">
+						Date
+					</div> <hr>
+				</th>
+				<th>
+					<div class="label">
+						Event Name
+					</div> <hr>
+				</th>
+				<th>
+					<div class="label">
+						Player
+					</div> <hr>
+				</th>
+				<th>
+					<div class="label">
+						Format
+					</div> <hr>
+				</th>
+				<th>
+					<div class="label">
+						Placing
+					</div> <hr>
+				</th>
+			</tr>
+			{% for deck in decks %}
+			<tr>
+				<th>
+					<input type="checkbox" value="{{deck.deck_id}}" name="deck" checked>
+				</th>
+				<th>
+					<div class="label">{{deck.event.get_date}}</div>
+				</th>
+				<th>
+					<div class="label"><a href="{% url 'events:event' deck.event.id %}">{{deck.event.name}}</a>
+					</div>
+				</th>
+	
+				<th>
+					<div class="label">
+						<a href="{% url 'events:player' deck.player_id.gem_id %}">{{deck.player_id}} 
+					</div>
+				</th>
+
+				<th> 
+					<div class="label"> 
+						<a class="spacing" href="{% url 'events:event_list' deck.event.format.code %}">{{deck.event.format.code}}</a> 
+					</div>
+				</th>
+
+				<th>
+					<div class="label">
+						{{deck.get_placings}}
+					</div>
+				</th>
+
+				<th><div class="label"><a href="{% url 'events:decklist' deck.deck_id %}"> View decklist </a></div></th>
+			</tr>
+			{% endfor %}
+		</table>
+		{% if page_obj.has_other_pages %}
+			<div class="pagination center-label">
+				<span class="step-links">
+				{% if page_obj.has_previous %}
+				<a href="?page={{ page_obj.previous_page_number }}">&laquo;</a>
+				{% else %}
+					<span>&laquo;</span>
+				{% endif %}
+				{% for i in paginator.page_range %}
+					{% if page_obj.number == i %}
+						<span class="selected">{{ i }}</span>
+					{% else %}
+						<a href="?page={{ i }}">{{ i }}</a>
+					{% endif %}
+				{% endfor %}
+				{% if page_obj.has_next %}
+				   <a href="?page={{ page_obj.next_page_number }}">&raquo;</a>
+				{% else %}
+					<span>&raquo;</span>
+				{% endif %}
+				</span>
+			</div>
+		{% endif %}
+	{% endif %}
+</div>
+{% endblock %}
+
+{% comment %}
+{% block popular %}
+    <h1 class="center-label">Most Played Cards for {{hero_name}}</h1>
+    <div class="grid-container">
+        {% for card in pop_cards %}
+            <div class="parent">
+                <img class="pop-card" src="{% static 'card/images/'|add:card.0.card_id|add:'.width-450.png' %}" id="imageshow" default="{% static 'card/images/cardback.width-450.png' %}">
+                <div class="child">
+                    {{card.1}}
+                </div>
+            </div>
+
+        {% endfor %}
+    </div>
+{% endblock %}
+{% endcomment %}

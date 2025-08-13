@@ -1,0 +1,121 @@
+{% extends "events/hero_panel.html" %}
+
+{% load static %}
+
+{% block extrastyles %}
+	.parent {
+        position: relative;
+		padding:5px;
+    }
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        padding: 5px;
+    }
+
+    .child {
+        position: absolute;
+        bottom: 15px;
+        width: 95%;
+        text-align:center;
+        background-color:rgba(0, 0, 0, 0.5);
+        color:white;
+    }
+    .pop-card {
+        width: 100%;
+        border: 0px;
+        margin-left:auto;
+        margin-right:auto;
+    }
+
+{% endblock %}
+
+{% block body %}
+<div class="center-label">
+    <h1>Latest Events</h1>
+    {% if format %}
+    <h2>{{format}} </h2>
+    {% endif %}
+    <br>
+</div>
+{% if latest_event_list|length > 0 %}
+<div>
+    <table style="margin:auto;">
+        <tr>
+            <th>
+                <h2 class="label">Format</h2> <hr>
+            </th>
+            <th>
+                <h2 class="label">Event Name</h2> <hr>
+            </th>
+            <th>
+                <h2 class="label">Event Date</h2> <hr>
+            </th>
+        </tr>
+        {% for event in latest_event_list %}
+            <tr>
+                <th><div class='label'>{{event.format.code}}</div></th>
+                <th><div class='label'><a href="{% url 'events:event' event.id %}"> {{event.name}} </a></div></th>
+                <th><div class='label'>{{event.get_date}}</div></th>
+            </tr>
+        {% endfor %}
+    </table>
+    {% if page_obj.has_other_pages %}
+    <div class="pagination center-label">
+        <span class="step-links">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}">&laquo;</a>
+        {% else %}
+            <span>&laquo;</span>
+        {% endif %}
+        {% for i in paginator.page_range %}
+            {% if page_obj.number == i %}
+                <span class="selected">{{ i }}</span>
+            {% else %}
+                <a href="?page={{ i }}">{{ i }}</a>
+            {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+           <a href="?page={{ page_obj.next_page_number }}">&raquo;</a>
+        {% else %}
+            <span>&raquo;</span>
+        {% endif %}
+        </span>
+    </div>
+    {% endif %}
+</div>
+{% else %}
+    No Events
+{% endif %}
+{% endblock %}
+
+{% block hero_block %}
+    <h1>Heroes</h1>
+    <table>
+    {% for hero in heroes %}
+    <tr>
+        <th>
+        <div class='label'><a href="{% url 'events:hero' hero.young_name %}">{{hero.young_name}}</a></div>
+        </th>
+    </tr>
+    {% endfor %}
+    </table>
+
+{% endblock %}
+
+{% comment %}
+    {% block popular %}
+        <h1 class="center-label">Most Played Cards {% if format %}in {{format}}{% endif %}</h1>
+        <div class="grid-container">
+            {% for card in pop_cards %}
+                <div class="parent">
+                    <img class="pop-card" src="{% static 'card/images/'|add:card.0.card_id|add:'.width-450.png' %}" id="imageshow" default="{% static 'card/images/cardback.width-450.png' %}">
+                    <div class="child">
+                        {{card.1}}
+                    </div>
+                </div>
+
+            {% endfor %}
+        </div>
+    {% endblock %}
+{% endcomment %}

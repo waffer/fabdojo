@@ -1,0 +1,87 @@
+{% extends "events/base.html" %}
+
+{% block extrastyles %}
+<style>
+	table {
+		table-layout: auto;
+	}
+
+    .scroll {
+		overflow:auto;
+	}
+</style>
+{% endblock %}
+
+
+{% block body %}
+<div class="center border scroll">
+    <div class="inner">
+        <h1>{{decks.0.player_id.name}}</h1>
+        <br>
+        <table>
+            <tr>
+                <th>
+                    <h2 class='label'>Date</h2> <hr>
+                </th>
+                <th>
+                    <h2 class='label'>Event</h2> <hr>
+                </th>
+                <th>
+                    <h2 class='label'>Hero</h2> <hr>
+                </th>
+                <th>
+                    <h2 class='label'>Format</h2> <hr>
+                </th>
+                <th>
+                    <h2 class='label'>Placing</h2> <hr>
+                </th>
+            </tr>
+            {% for deck in decks %}
+            <tr>
+                <th>
+                    <div class='label'>{{deck.event.get_date}} </div>
+                </th>
+                <th>
+                    <div class='label'><a href="{% url 'events:event' deck.event.id %}"> {{deck.event.name}}</a></div>
+                </th>
+                <th>
+                    <div class='label'><a href="{% url 'events:hero' deck.hero %}">{{deck.get_hero_name}}</div>
+                </th>
+                <th>
+                    <div class='label'><a class="spacing" href="{% url 'events:event_list' deck.event.format.code %}">{{deck.event.format.code}}</a></div>
+                </th>
+                <th>
+                    <div class='label'>{{deck.get_placings}}</div>
+                </th>
+                <th>
+                    <div class='label'><a href="{% url 'events:decklist' deck.deck_id %}">View Decklist </a></div>
+                </th>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% if page_obj.has_other_pages %}
+    <div class="pagination center-label">
+        <span class="step-links">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}">&laquo;</a>
+        {% else %}
+            <span>&laquo;</span>
+        {% endif %}
+        {% for i in paginator.page_range %}
+            {% if page_obj.number == i %}
+                <span class="selected">{{ i }}</span>
+            {% else %}
+                <a href="?page={{ i }}">{{ i }}</a>
+            {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+           <a href="?page={{ page_obj.next_page_number }}">&raquo;</a>
+        {% else %}
+            <span>&raquo;</span>
+        {% endif %}
+        </span>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

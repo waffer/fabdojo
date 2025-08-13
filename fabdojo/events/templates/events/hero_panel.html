@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<!-- Global site tag (gtag.js) - Google Analytics -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-J4MTJVF1KF%22%3E"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+
+			gtag('config', 'G-J4MTJVF1KF');
+		</script>
+
+		<script>
+		window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+		ga('create', 'G-J4MTJVF1KF', 'auto');
+		ga('send', 'pageview', 'location.pathname');
+		</script>
+		{% load static %}
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
+		{% block extrascripts %}
+		{% endblock %}
+		<style>
+		{% block extrastyles %}
+		{% endblock %}
+		</style>
+		
+		<link rel="stylesheet" type="text/css" href="{% static 'events/style.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'events/split.css' %}">
+	</head>
+
+	<body>
+		<a href="{% url 'events:index' %}">
+		<img class="img_center" src="{% static 'events/images/fab-dojo.jpg' %}">
+		</a>
+		<div class=" center">
+			<h2 style="margin:0px; padding:5px;"><a class="spacing" href="{% url 'events:event_list' 'All' %}">All Events</a>
+			<a class="spacing" href="{% url 'events:event_list' 'CC' %}">Classic Constructed</a>
+			<a class="spacing" href="{% url 'events:event_list' 'Blitz' %}">Blitz</a></h2>
+		</div>
+		<div class="center content-sidebar">
+			<div class="left-content border">
+				{% block hero_block %}
+				{% endblock %}
+			</div>
+			<div class="right-content border">
+				{% block body %}
+				{% endblock %}
+			</div>
+		</div>
+		<div class="center">
+		{% block popular %}
+		{% endblock %}
+		</div>
+		<br>
+		<div style="text-align:center;">Email: decklists@fabdojo.com</div>
+		<br>
+	</body>
+</html>
+
